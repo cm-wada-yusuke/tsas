@@ -147,10 +147,10 @@ class CredentialsCache {
     }
 
     public async get(awsAccountId: string | undefined, mode: Mode): Promise<AWS.Credentials> {
-        const key = `${awsAccountId}-${mode}`;
+        const key = `${APP_NAME}`;
         if (!(key in this.cache)) {
             console.log('cahce miss:', key);
-            this.cache[key] = await this.getCredentials(awsAccountId, mode);
+            this.cache[key] = await (await this.defaultCredentialProvider).resolvePromise();
         }
         console.log('cahce hit:', key);
         return this.cache[key];

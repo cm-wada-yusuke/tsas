@@ -1,37 +1,46 @@
-import { print } from '../logging';
+import * as AWS from 'aws-sdk';
 import { GetParametersByPathRequest, Parameter } from 'aws-sdk/clients/ssm';
-import { SDK, SDKOptions } from '../option/profile/sdk';
-import { Mode } from '../option/profile/credentials';
-import colors = require('colors/safe');
-import SSM = require('aws-sdk/clients/ssm');
+import { IOption } from '../option/option';
+import { ISettings } from '../settings/settings';
+import { ParameterUtils } from './util';
+
+const SSM = new AWS.SSM({
+    apiVersion: '2014-11-06',
+    region: 'ap-northeast-1' //TODO
+});
 
 export class ListParameters {
 
+    settings: ISettings;
+    option: IOption;
 
-    public async execute(args: any) {
-        const sdkOptions: SDKOptions = {
-            profile: 'cm-wada'
-        };
-        const ssm = await new SDK(sdkOptions).ssm(args.awsAccoundId, args.region, Mode.ForWriting);
-        const result = await new ListParametersUseCase().getParameters(ssm);
+    constructor(settings: ISettings, option: IOption) {
+        this.settings = settings;
+        this.option = option;
+    }
+
+    public async execute() {
+        const basePath = ParameterUtils.basePath(this.settings, this.option.env);
+        const result = await ListParametersUseCase.getParameters(basePath);
         console.log(result);
+        console.log(this.option);
     }
 
 }
 
-class ListParametersUseCase {
+export class ListParametersUseCase {
 
-    public async getParameters(ssm: SSM): Promise<Parameter[]> {
+    public static async getParameters(basePath: string): Promise<Parameter[]> {
 
         const parameters: GetParametersByPathRequest = {
-            Path: `/itg/lambda`,
+            Path: basePath,
             Recursive: true,
             WithDecryption: true,
             MaxResults: 2,
         };
         let result: Parameter[] = [];
         do {
-            const response = await ssm.getParametersByPath(parameters).promise();
+            const response = await SSM.getParametersByPath(parameters).promise();
             parameters.NextToken = response.NextToken;
             if (response.Parameters) {
                 result = result.concat(response.Parameters);
