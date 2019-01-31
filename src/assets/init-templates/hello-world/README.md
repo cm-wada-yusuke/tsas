@@ -1,4 +1,4 @@
 # Useful commands
 
- * `tlam init`  initialize project. 
+ * `tsas init`  initialize project. 
  

@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  HelloWorldHelloLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${Env}-${AppName}-hello
+      Role: !GetAtt HelloWorldLambdaRole.Arn
+      Handler: hello-world/index.handler
+      Runtime: nodejs8.10
+      CodeUri:
+        Bucket: !Ref DeployBucketName
+        Key: !Sub ${ChangeSetHash}/dist.zip
+      Timeout: 5
+      Environment:
+        Variables:
+          ENV: !Ref Env
+          GREETING_TABLE_NAME: !Ref GreetingTableName
+
+  HelloWorldLambdaRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: !Sub ${Env}-${AppName}-lambda-role
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess'
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+        - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
+      Policies:
+        - PolicyName: PermissionToPassAnyRole
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              Effect: Allow
+              Action:
+                - iam:PassRole
+              Resource: !Sub arn:aws:iam::${AWS::AccountId}:role/*
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          -
+            Effect: 'Allow'
+            Principal:
+              Service:
+                - 'lambda.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'

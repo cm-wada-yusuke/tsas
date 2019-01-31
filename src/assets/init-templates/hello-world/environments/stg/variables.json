@@ -1,0 +1,22 @@
+[
+  {
+    "Name": "Env",
+    "Value": "stg"
+  },
+  {
+    "Name": "DynamoDBEndpoint",
+    "Value": "https://dynamodb.ap-northeast-1.amazonaws.com/"
+  },
+  {
+    "Name": "GreetingTableName",
+    "Value": "stg-greeting"
+  },
+  {
+    "Name": "Rcu",
+    "Value": "1"
+  },
+  {
+    "Name": "Wcu",
+    "Value": "1"
+  }
+]

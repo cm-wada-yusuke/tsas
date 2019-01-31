@@ -1,31 +1,30 @@
-import * as AWS from 'aws-sdk';
+import * as SSM from 'aws-sdk/clients/ssm';
 import { PutParameterRequest } from 'aws-sdk/clients/ssm';
 import { IOption } from '../option/option';
 import { ISettings } from '../settings/settings';
 import { EnvironmentVariables, IEnvironmentVariables } from '../settings/environment-variables';
 import { ParameterUtils } from './util';
 import { ListParametersUseCase } from './list-parameters';
-
-const SSM = new AWS.SSM({
-    apiVersion: '2014-11-06',
-    region: 'ap-northeast-1' //TODO
-});
+import { AwsHangar } from '../option/profile/aws-hangar';
 
 export class PushParameters {
 
     settings: ISettings;
     option: IOption;
+    awsHanger: AwsHangar;
+
 
     constructor(settings: ISettings, option: IOption) {
         this.settings = settings;
         this.option = option;
+        this.awsHanger = new AwsHangar(settings, option);
     }
 
     public async execute() {
-        const basePath = ParameterUtils.basePath(this.settings, this.option.env);
+        const basePath = ParameterUtils.basePath(await this.settings, this.option.env);
         const variables = await EnvironmentVariables.load(this.option.env);
-        await PushParametersUseCase.push(basePath, variables);
-        const result = await ListParametersUseCase.getParameters(basePath);
+        await PushParametersUseCase.push(this.awsHanger.ssm(), basePath, variables);
+        const result = await ListParametersUseCase.getParameters(this.awsHanger.ssm(), basePath);
         console.log(result);
     }
 
@@ -33,7 +32,7 @@ export class PushParameters {
 
 class PushParametersUseCase {
 
-    public static async push(basePath: string, variables: IEnvironmentVariables[]): Promise<any[]> {
+    public static async push(ssm: SSM, basePath: string, variables: IEnvironmentVariables[]): Promise<any[]> {
 
         const promise: Promise<any>[] = variables.map((p: IEnvironmentVariables) => {
             const putParameters: PutParameterRequest = {
@@ -42,7 +41,7 @@ class PushParametersUseCase {
                 Type: 'String',
                 Overwrite: true,
             };
-            return SSM.putParameter(putParameters).promise();
+            return ssm.putParameter(putParameters).promise();
         });
         return Promise.all(promise);
     }

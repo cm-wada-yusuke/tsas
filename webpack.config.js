@@ -3,7 +3,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
 
 module.exports = {
-    entry: './src/typed-lambda.ts',
+    entry: './src/tsas.ts',
     target: 'node',
     node: {
         __dirname: false,
