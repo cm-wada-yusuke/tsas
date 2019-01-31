@@ -3,25 +3,21 @@ import yargs from 'yargs';
 import { print, setVerbose } from './logging';
 import { Init } from './init';
 import { ListParameters } from './param/list-parameters';
-import colors = require('colors/safe');
 import { OptionParser } from './option/option';
-import { ISettings, Settings } from './settings/settings';
+import { Settings } from './settings/settings';
 import { PushParameters } from './param/push-parameters';
+import { DeployServerless } from './deploy/deploy-serverless';
+import colors = require('colors/safe');
 
 const CLI = 'tlam';
 
 class TypedLambda {
     static async initCommandLine() {
         setVerbose();
-        const settings = await this.loadSettingFile();
-        TypedLambda.executeCommandLine(settings);
+        TypedLambda.executeCommandLine();
     }
 
-    private static async loadSettingFile(): Promise<ISettings>{
-        return Settings.load();
-    }
-
-    private static executeCommandLine(settings: ISettings) {
+    private static executeCommandLine() {
         return yargs
             .usage(`Usage: ${CLI} COMMAND`)
             .option('profile', {type: 'string', desc: 'Use the indicated AWS profile as the default environment'})
@@ -40,18 +36,38 @@ class TypedLambda {
                         .command({
                             command: 'push',
                             describe: 'Push parameters to AWS Systems Manager, parameter store.',
-                            handler: async (argv) => new PushParameters(settings, OptionParser.parse(argv)).execute(),
+                            handler: async (argv) => new PushParameters(await Settings.load(), OptionParser.parse(argv)).execute(),
                         })
                         .command({
                             command: 'list',
                             describe: 'ListParameters parameters to AWS Systems Manager, parameter store.',
-                            handler: async (argv) => new ListParameters(settings, OptionParser.parse(argv)).execute()
+                            handler: async (argv) => new ListParameters(await Settings.load(), OptionParser.parse(argv)).execute()
                         })
                         .help()
+                        .demandOption('env', 'Please provide environment name.')
+                }
+            })
+            .command({
+                command: 'deploy',
+                handler: (_) => print(colors.yellow(`usage: ${CLI} deploy <action> [options]`)),
+                describe: 'Deploy aws resources, [serverless|sls|cloudformation|cfn]',
+                builder: (param) => {
+                    return param
+                        .command({
+                            command: ['serverless', 'sls'],
+                            describe: 'Deploy a template includes AWS::DeployServerless type.',
+                            handler: async (argv) => new DeployServerless(await Settings.load(), OptionParser.parse(argv)).execute(),
+                        })
+                        .command({
+                            command: ['cloudformation', 'cfn'],
+                            describe: 'Deploy a pure CloudFormation template.',
+                            handler: async (argv) => new ListParameters(await Settings.load(), OptionParser.parse(argv)).execute()
+                        })
+                        .help()
+                        .demandOption('env', 'Please provide environment name.')
                 }
             })
             .demandCommand(1, 'You need at least one command before moving on')
-            .demandOption('env', 'Please provide environment name.')
             .help()
             .alias('h', 'help')
             .locale('en')
@@ -60,4 +76,4 @@ class TypedLambda {
 
 }
 
-TypedLambda.initCommandLine().then();
+TypedLambda.initCommandLine().then().catch(error => error(colors.red(error)));

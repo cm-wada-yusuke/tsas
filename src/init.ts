@@ -2,8 +2,7 @@ import childProcess = require('child_process');
 import colors = require('colors/safe');
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as os from 'os';
-import { print,warning } from './logging';
+import { print, warning } from './logging';
 
 // tslint:disable:no-var-requires those libraries don't have up-to-date @types modules
 const camelCase = require('camelcase');

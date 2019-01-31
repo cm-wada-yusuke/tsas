@@ -1,7 +1,7 @@
 import * as AWS from 'aws-sdk';
 import { PutParameterRequest } from 'aws-sdk/clients/ssm';
 import { IOption } from '../option/option';
-import { ISettings } from '../settings/settings';
+import { ISettings, Settings } from '../settings/settings';
 import { EnvironmentVariables, IEnvironmentVariables } from '../settings/environment-variables';
 import { ParameterUtils } from './util';
 import { ListParametersUseCase } from './list-parameters';
@@ -13,16 +13,16 @@ const SSM = new AWS.SSM({
 
 export class PushParameters {
 
-    settings: ISettings;
+    settings: Promise<ISettings>;
     option: IOption;
 
     constructor(settings: ISettings, option: IOption) {
-        this.settings = settings;
+        this.settings = Settings.load();
         this.option = option;
     }
 
     public async execute() {
-        const basePath = ParameterUtils.basePath(this.settings, this.option.env);
+        const basePath = ParameterUtils.basePath(await this.settings, this.option.env);
         const variables = await EnvironmentVariables.load(this.option.env);
         await PushParametersUseCase.push(basePath, variables);
         const result = await ListParametersUseCase.getParameters(basePath);

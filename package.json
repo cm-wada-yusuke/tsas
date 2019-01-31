@@ -27,9 +27,11 @@
   },
   "homepage": "https://github.com/cm-wada-yusuke/typed-lambda#readme",
   "devDependencies": {
+    "@types/archiver": "^2.1.2",
     "@types/aws-sdk": "^2.7.0",
     "@types/fs-extra": "^5.0.4",
     "@types/node": "^10.12.18",
+    "@types/uuid": "^3.4.4",
     "@types/yargs": "^12.0.5",
     "copy-webpack-plugin": "^4.6.0",
     "ts-loader": "^5.3.3",
@@ -39,11 +41,13 @@
     "webpack-node-externals": "^1.7.2"
   },
   "dependencies": {
+    "archiver": "^3.0.0",
     "aws-sdk": "^2.393.0",
     "colors": "^1.3.3",
     "fs-extra": "^7.0.1",
     "proxy-agent": "^3.0.3",
     "source-map-support": "^0.5.10",
+    "uuid": "^3.3.2",
     "yargs": "^12.0.5"
   }
 }
