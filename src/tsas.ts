@@ -20,7 +20,7 @@ class Tsas {
     private static executeCommandLine() {
         return yargs
             .usage(`Usage: ${CLI} COMMAND`)
-            .option('profile', {type: 'string', desc: 'Use the indicated AWS profile as the default environment'})
+            .option('region', {type: 'string', desc: 'Use the indicated AWS region to override default in config file.'})
             .option('env', {type: 'string', alias: 'e', desc: 'Environment name; such as dev, stg, prod...'})
             .command({
                 command: 'init',
