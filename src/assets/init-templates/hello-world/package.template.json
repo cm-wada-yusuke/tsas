@@ -1,5 +1,5 @@
 {
-  "name": "%name%",
+  "name": "%appName%",
   "version": "0.1.0",
   "scripts": {
     "build": "webpack --config webpack.config.js",

@@ -9,12 +9,12 @@ import { PushParameters } from './param/push-parameters';
 import { DeployServerless } from './deploy/deploy-serverless';
 import colors = require('colors/safe');
 
-const CLI = 'tlam';
+const CLI = 'tsas';
 
-class TypedLambda {
+class Tsas {
     static async initCommandLine() {
         setVerbose();
-        TypedLambda.executeCommandLine();
+        Tsas.executeCommandLine();
     }
 
     private static executeCommandLine() {
@@ -55,7 +55,7 @@ class TypedLambda {
                     return param
                         .command({
                             command: ['serverless', 'sls'],
-                            describe: 'Deploy a template includes AWS::DeployServerless type.',
+                            describe: 'Deploy a template includes AWS::Serverless type.',
                             handler: async (argv) => new DeployServerless(await Settings.load(), OptionParser.parse(argv)).execute(),
                         })
                         .command({
@@ -76,4 +76,4 @@ class TypedLambda {
 
 }
 
-TypedLambda.initCommandLine().then().catch(error => error(colors.red(error)));
+Tsas.initCommandLine().then().catch(error => error(colors.red(error)));

@@ -3,25 +3,24 @@ import { GetParametersByPathRequest, Parameter } from 'aws-sdk/clients/ssm';
 import { IOption } from '../option/option';
 import { ISettings } from '../settings/settings';
 import { ParameterUtils } from './util';
-
-const SSM = new AWS.SSM({
-    apiVersion: '2014-11-06',
-    region: 'ap-northeast-1' //TODO
-});
+import * as SSM from 'aws-sdk/clients/ssm';
+import { AwsHangar } from '../option/profile/aws-hangar';
 
 export class ListParameters {
 
     settings: ISettings;
     option: IOption;
+    awsHanger: AwsHangar;
 
     constructor(settings: ISettings, option: IOption) {
         this.settings = settings;
         this.option = option;
+        this.awsHanger = new AwsHangar(settings, option);
     }
 
     public async execute() {
         const basePath = ParameterUtils.basePath(this.settings, this.option.env);
-        const result = await ListParametersUseCase.getParameters(basePath);
+        const result = await ListParametersUseCase.getParameters(this.awsHanger.ssm(), basePath);
         console.log(result);
         console.log(this.option);
     }
@@ -30,7 +29,7 @@ export class ListParameters {
 
 export class ListParametersUseCase {
 
-    public static async getParameters(basePath: string): Promise<Parameter[]> {
+    public static async getParameters(ssm: SSM, basePath: string): Promise<Parameter[]> {
 
         const parameters: GetParametersByPathRequest = {
             Path: basePath,
@@ -40,7 +39,7 @@ export class ListParametersUseCase {
         };
         let result: Parameter[] = [];
         do {
-            const response = await SSM.getParametersByPath(parameters).promise();
+            const response = await ssm.getParametersByPath(parameters).promise();
             parameters.NextToken = response.NextToken;
             if (response.Parameters) {
                 result = result.concat(response.Parameters);

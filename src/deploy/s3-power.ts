@@ -1,16 +1,18 @@
-import * as AWS from 'aws-sdk';
 import * as logging from '../logging';
 import * as fs from 'fs';
 import colors = require('colors/safe');
-
-const S3 = new AWS.S3({
-    region: 'ap-northeast-1' //TODO
-});
+import S3 = require('aws-sdk/clients/s3');
 
 
 export class S3Power {
 
-    public static async createDeployBucketIfNotExists(deployBucketName: string) {
+    private readonly s3: S3;
+
+    constructor(s3: S3) {
+        this.s3 = s3;
+    }
+
+    public async createDeployBucketIfNotExists(deployBucketName: string) {
         const exists = await this.checkDeployBucketExists(deployBucketName);
         if (exists) {
             logging.print(colors.green(`Deploy bucket: ${deployBucketName} is already exists. Skip creating...`));
@@ -22,17 +24,17 @@ export class S3Power {
 
     }
 
-    public static async putFile(deployBucketName: string, localFilePath: string, s3Key: string): Promise<any> {
+    public async putFile(deployBucketName: string, localFilePath: string, s3Key: string): Promise<any> {
         logging.print(colors.white('upload %s'), localFilePath);
-        return S3.putObject({
+        return this.s3.putObject({
             Bucket: deployBucketName,
             Key: s3Key,
             Body: fs.readFileSync(localFilePath)
         }).promise();
     }
 
-    private static async checkDeployBucketExists(bucketName: string): Promise<boolean> {
-        const result = S3.headBucket({
+    private async checkDeployBucketExists(bucketName: string): Promise<boolean> {
+        const result = this.s3.headBucket({
             Bucket: bucketName
         }).promise();
 
@@ -47,8 +49,8 @@ export class S3Power {
         }
     }
 
-    private static async createDeployBucket(bucketName: string) {
-        return S3.createBucket({
+    private async createDeployBucket(bucketName: string) {
+        return this.s3.createBucket({
             Bucket: bucketName
         }).promise();
     }

@@ -3,6 +3,7 @@ import colors = require('colors/safe');
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { print, warning } from './logging';
+import * as readlineSync from 'readline-sync';
 
 // tslint:disable:no-var-requires those libraries don't have up-to-date @types modules
 const camelCase = require('camelcase');
@@ -16,31 +17,50 @@ export class Init {
 
     public async execute() {
         await this.assertIsEmptyDirectory();
-        await this.install(process.cwd());
+        const config: ProjectInfo = this.readlineForConfig();
+        await this.install(process.cwd(), config);
         await this.initializeGitRepository();
         await this.postInstall();
         if (await fs.pathExists('README.md')) {
-            print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
+            print(colors.green(await fs.readFile('README.md', {encoding: 'utf-8'})));
         } else {
             print(`✅ All done!`);
         }
     }
 
-    private async  assertIsEmptyDirectory() {
+    private readlineForConfig(): ProjectInfo {
+        const appName = readlineSync.question('What your serverless application name? [$<defaultInput>]', {
+            defaultInput: this.getDefaultAppName(process.cwd())
+        });
+        const nameSpace = readlineSync
+            .question('What your serverless application nameSpace? used for S3 bucket prefix. [$<defaultInput>]', {
+                defaultInput: 'ns'
+            });
+        const defaultRegion = readlineSync
+            .question('What your default region? [$<defaultInput>]', {
+                defaultInput: 'ap-northeast-1'
+            });
+
+        return {appName, nameSpace, defaultRegion}
+    }
+
+    private async assertIsEmptyDirectory() {
         const files = await fs.readdir(process.cwd());
         if (files.length !== 0) {
-            throw new Error('`tlam init` cannot be run in a non-empty directory!');
+            throw new Error('`init` command cannot be run in a non-empty directory!');
         }
     }
 
-    private async install(targetDirectory: string) {
+    private async install(targetDirectory: string, projectInfo: ProjectInfo) {
         const sourceDirectory = APP_DIR;
         print('sourceDir:', sourceDirectory);
         print('cwd:', process.cwd());
         print('__dirname:', __dirname);
-        await this.installFiles(sourceDirectory, targetDirectory, {
-            name: decamelize(path.basename(path.resolve(targetDirectory)))
-        });
+        await this.installFiles(sourceDirectory, targetDirectory, projectInfo);
+    }
+
+    private getDefaultAppName(targetDirectory: string): string {
+        return decamelize(path.basename(path.resolve(targetDirectory)));
     }
 
     private async installFiles(sourceDirectory: string, targetDirectory: string, project: ProjectInfo) {
@@ -60,7 +80,7 @@ export class Init {
     }
 
     private async installProcessed(templatePath: string, toFile: string, project: ProjectInfo) {
-        const template = await fs.readFile(templatePath, { encoding: 'utf-8' });
+        const template = await fs.readFile(templatePath, {encoding: 'utf-8'});
         await fs.writeFile(toFile, this.expand(template, project));
     }
 
@@ -77,13 +97,17 @@ export class Init {
 
 
     private expand(template: string, project: ProjectInfo) {
-        return template.replace(/%name%/g, project.name)
-            .replace(/%name\.camelCased%/g, camelCase(project.name))
-            .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }));
+        return template.replace(/%appName%/g, project.appName)
+            .replace(/%appName\.camelCased%/g, camelCase(project.appName))
+            .replace(/%appName\.PascalCased%/g, camelCase(project.appName, {pascalCase: true}))
+            .replace(/%nameSpace%/g, project.nameSpace)
+            .replace(/%defaultRegion%/g, project.defaultRegion);
     }
 
     private async initializeGitRepository() {
-        if (await this.isInGitRepository(process.cwd())) { return; }
+        if (await this.isInGitRepository(process.cwd())) {
+            return;
+        }
         print('Initializing a new git repository...');
         try {
             await execute('git', 'init');
@@ -96,8 +120,12 @@ export class Init {
 
     private async isInGitRepository(dir: string) {
         while (true) {
-            if (await fs.pathExists(path.join(dir, '.git'))) { return true; }
-            if (this.isRoot(dir)) { return false; }
+            if (await fs.pathExists(path.join(dir, '.git'))) {
+                return true;
+            }
+            if (this.isRoot(dir)) {
+                return false;
+            }
             dir = path.dirname(dir);
         }
     }
@@ -109,7 +137,9 @@ export class Init {
 
 interface ProjectInfo {
     /** The value used for %name% */
-    readonly name: string;
+    readonly appName: string;
+    readonly nameSpace: string;
+    readonly defaultRegion: string;
 }
 
 
@@ -122,7 +152,7 @@ interface ProjectInfo {
  * @returns STDOUT (if successful).
  */
 async function execute(cmd: string, ...args: string[]) {
-    const child = childProcess.spawn(cmd, args, { shell: true, stdio: [ 'ignore', 'pipe', 'inherit' ] });
+    const child = childProcess.spawn(cmd, args, {shell: true, stdio: ['ignore', 'pipe', 'inherit']});
     let stdout = '';
     child.stdout.on('data', chunk => stdout += chunk.toString());
     return new Promise<string>((ok, fail) => {

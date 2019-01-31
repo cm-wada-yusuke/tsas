@@ -1,6 +1,6 @@
 import 'source-map-support/register';
 
-const EnvironmentVariableSample = process.env.GREET_TABLE_NAME!;
+const EnvironmentVariableSample = process.env.GREETING_TABLE_NAME!;
 
 exports.handler = async (event: any) => {
     return HelloWorldController.hello(event);
@@ -17,7 +17,7 @@ export class HelloWorldController {
         return {
             title: 'hello, lambda!',
             description: 'my first message.',
-            greetTableName: EnvironmentVariableSample
+            greetingTableName: EnvironmentVariableSample
         }
     }
 }
@@ -25,5 +25,5 @@ export class HelloWorldController {
 export interface IGreet {
     title: string;
     description: string;
-    greetTableName: string;
+    greetingTableName: string;
 }

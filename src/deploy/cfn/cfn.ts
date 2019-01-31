@@ -107,6 +107,8 @@ export async function waitForChangeSet(cfn: CloudFormation, stackName: string, c
         } else if (description.Status === 'FAILED') {
             if (description.StatusReason && description.StatusReason.startsWith('The submitted information didn\'t contain changes.')) {
                 return description;
+            } else if (description.StatusReason && description.StatusReason.startsWith('No updates are to be performed.')) {
+                return description;
             }
         }
         // tslint:disable-next-line:max-line-length
