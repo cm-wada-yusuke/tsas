@@ -37,6 +37,13 @@ Options:
   -h, --help  Show help                                                [boolean]
 ```
 
+### Requirements
+
+AWS accessible CLI. See:
+
+* [Configuring the AWS CLI \- AWS Command Line Interface](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
+
+
 ### Create project template.
 
 ```bash
