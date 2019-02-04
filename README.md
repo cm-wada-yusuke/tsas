@@ -197,7 +197,7 @@ tsas deploy cloudformation dynamodb --env stg
 ```
 
 The <template_name> is required to match the CloudFormation template file name, so above command will deploy `templates/dynamodb.yaml`.
-You can add new resources by following these steps.
+You can add new resources by following steps.
 
 ```bash
 touch templates/s3.yaml
