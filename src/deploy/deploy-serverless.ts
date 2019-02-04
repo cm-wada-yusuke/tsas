@@ -2,15 +2,13 @@ import { IOption } from '../option/option';
 import { ISettings } from '../settings/settings';
 import * as childProcess from 'child_process';
 import * as logging from '../logging';
-import { debug } from '../logging';
 import { S3Power } from './s3-power';
 import * as fs from 'fs';
 import { CfnPower } from './cfn/cfn-power';
-import * as jsyaml from 'js-yaml';
 import { SsmPower } from './ssm-power';
-import { Parameters } from 'aws-sdk/clients/cloudformation';
 import { ParameterUtils } from '../param/util';
 import { AwsHangar } from '../option/profile/aws-hangar';
+import { DeployUtils } from './deploy-utils';
 import colors = require('colors/safe');
 import archiver = require('archiver');
 import fsExtra = require('fs-extra');
@@ -22,6 +20,7 @@ export class DeployServerless {
     option: IOption;
     deployBucketName: string;
     awsHanger: AwsHangar;
+    deployName: string = 'lambda';
 
 
     constructor(settings: ISettings, option: IOption) {
@@ -56,21 +55,27 @@ export class DeployServerless {
 
         // generate cfn templates. search from
         const parameterSearchBasePath = ParameterUtils.basePath(this.settings, this.option.env);
-        const parameterYaml: string = await DeployServerlessUseCase.dumpCfnParameterSection(ssmPower, parameterSearchBasePath);
-        DeployServerlessUseCase.collectTemplates();
-        await DeployServerlessUseCase.mergeParametersToTemplates(parameterYaml);
+        const parameterYaml: string = await ssmPower.generateCfnParameterSectionYaml(parameterSearchBasePath);
+        DeployUtils.collectTemplates();
+        await DeployUtils.mergeParametersToTemplates(parameterYaml);
         logging.print(colors.green('Bundle completed.'));
 
         logging.print(colors.green('\n\n\n4. Upload functions and templates.'));
         const hash = await DeployServerlessUseCase.hash(output);
         await DeployServerlessUseCase.uploadLambda(s3Power, this.deployBucketName, hash);
-        await DeployServerlessUseCase.uploadTemplates(s3Power, this.deployBucketName, hash);
+        await DeployUtils.uploadTemplates(s3Power, this.deployBucketName, hash);
         logging.print(colors.green('Upload completed.'));
 
         logging.print(colors.green('\n\n\n5. Deploy functions.'));
         const parameters = CfnPower.generateCfnParameter(this.settings, this.option, hash, this.deployBucketName);
-        await DeployServerlessUseCase.deploy(cfnPower, this.deployBucketName, this.settings, this.option, hash, parameters);
+        await DeployUtils.deploy(cfnPower, this.deployBucketName, this.option.env, this.settings.appName, this.deployName, hash, parameters);
+
+
+        logging.print(colors.green('\n\n\nCleaning up...'));
+        await DeployUtils.cleanup();
         logging.print(colors.green('\n\n\n✅ All done.'));
+
+
 
 
     }
@@ -139,22 +144,6 @@ class DeployServerlessUseCase {
         });
     }
 
-    public static collectTemplates(): void {
-        logging.print(colors.white('collect templates...'));
-        fsExtra.copySync('./templates', './deploy/templates');
-    }
-
-    public static async mergeParametersToTemplates(parameterYaml: string): Promise<any> {
-        const deployTemplatesDir = './deploy/templates';
-        const merges = fs.readdirSync(deployTemplatesDir).map(async (yaml) => {
-            const templateYaml = `${deployTemplatesDir}/${yaml}`;
-            const appendData = '\n' + parameterYaml;
-            logging.print(`parameter merged: ${templateYaml}`);
-            return fsExtra.appendFile(templateYaml, appendData, {encoding: 'utf8'});
-        });
-        return Promise.all(merges);
-    }
-
     public static hash(zipFilePath: string): Promise<string> {
         return new Promise((resolve, reject) => {
             logging.print(colors.white('calculate zip hash...'));
@@ -173,27 +162,4 @@ class DeployServerlessUseCase {
         return s3Power.putFile(bucketName, lambda, key);
     }
 
-    public static uploadTemplates(s3Power: S3Power, bucketName: string, hash: string): Promise<any> {
-        const templatesDir = './deploy/templates';
-        const keyBase = hash;
-        const puts = fs.readdirSync(templatesDir).map((yaml) => {
-            const templateYaml = `${templatesDir}/${yaml}`;
-            const s3Key = `${keyBase}/templates/${yaml}`;
-            return s3Power.putFile(bucketName, templateYaml, s3Key);
-        });
-        return Promise.all(puts);
-    }
-
-    public static async deploy(cfnPower: CfnPower, bucketName: string, settings: ISettings, option: IOption, hash: string, parameters: Parameters): Promise<any> {
-        const templateS3Url = `https://s3.amazonaws.com/${bucketName}/${hash}/templates/lambda.yaml`;
-        const stackName = `${option.env}-${settings.appName}-lambda-stack`;
-        return cfnPower.deployStack(templateS3Url, stackName, parameters);
-    }
-
-    public static async dumpCfnParameterSection(ssmPower: SsmPower, basePath: string): Promise<string> {
-        const cfnParameters = await ssmPower.generateCfnParameterSection(basePath);
-        const outData = jsyaml.safeDump(cfnParameters);
-        debug(outData);
-        return outData;
-    }
 }

@@ -53,9 +53,7 @@ export class Init {
 
     private async install(targetDirectory: string, projectInfo: ProjectInfo) {
         const sourceDirectory = APP_DIR;
-        print('sourceDir:', sourceDirectory);
-        print('cwd:', process.cwd());
-        print('__dirname:', __dirname);
+        print('create to:', process.cwd());
         await this.installFiles(sourceDirectory, targetDirectory, projectInfo);
     }
 

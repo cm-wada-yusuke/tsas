@@ -8,20 +8,25 @@ import { Settings } from './settings/settings';
 import { PushParameters } from './param/push-parameters';
 import { DeployServerless } from './deploy/deploy-serverless';
 import colors = require('colors/safe');
+import { DeployCloudFormation } from './deploy/deploy-cloud-formation';
+import { DisplayCfnParameters } from './display/display-cfn-parameters';
 
 const CLI = 'tsas';
 
 class Tsas {
     static async initCommandLine() {
-        setVerbose();
         Tsas.executeCommandLine();
     }
 
     private static executeCommandLine() {
         return yargs
             .usage(`Usage: ${CLI} COMMAND`)
-            .option('region', {type: 'string', desc: 'Use the indicated AWS region to override default in config file.'})
+            .option('region', {
+                type: 'string',
+                desc: 'Use the indicated AWS region to override default in config file.'
+            })
             .option('env', {type: 'string', alias: 'e', desc: 'Environment name; such as dev, stg, prod...'})
+            .option('verbose', {type: 'boolean', default: false, desc: 'Set verbose mode.'})
             .command({
                 command: 'init',
                 describe: 'Create a new, empty Typed Lambda project from a template.',
@@ -59,17 +64,31 @@ class Tsas {
                             handler: async (argv) => new DeployServerless(await Settings.load(), OptionParser.parse(argv)).execute(),
                         })
                         .command({
-                            command: ['cloudformation', 'cfn'],
-                            describe: 'Deploy a pure CloudFormation template.',
-                            handler: async (argv) => new ListParameters(await Settings.load(), OptionParser.parse(argv)).execute()
+                            command: ['cloudformation <name>', 'cfn <name>'],
+                            describe: 'Deploy specified pure CloudFormation template.',
+                            handler: async (argv) => new DeployCloudFormation(await Settings.load(), OptionParser.parse(argv)).execute()
+                        })
+                        .help()
+                        .demandOption('env', 'Please provide environment name.')
+                }
+            })
+            .command({
+                command: 'display',
+                handler: (_) => print(colors.yellow(`usage: ${CLI} display <target> [options]`)),
+                describe: 'Display information [cfn-parameters]',
+                builder: (param) => {
+                    return param
+                        .command({
+                            command: 'cfn-parameters',
+                            describe: 'Display parameters for CloudFormation template.',
+                            handler: async (argv) => new DisplayCfnParameters(await Settings.load(), OptionParser.parse(argv)).execute(),
                         })
                         .help()
                         .demandOption('env', 'Please provide environment name.')
                 }
             })
             .demandCommand(1, 'You need at least one command before moving on')
-            .help()
-            .alias('h', 'help')
+            .help().alias('h', 'help')
             .locale('en')
             .argv;
     }

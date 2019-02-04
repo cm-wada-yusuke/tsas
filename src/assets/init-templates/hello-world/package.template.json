@@ -7,6 +7,7 @@
   },
   "devDependencies": {
     "@types/node": "^8.9.4",
+    "@types/uuid": "^3.4.4",
     "typescript": "^3.1.6",
     "webpack": "^4.25.1",
     "webpack-cli": "^3.1.2",
@@ -14,6 +15,7 @@
     "webpack-node-externals": "^1.7.2"
   },
   "dependencies": {
-    "aws-sdk": "^2.392.0"
+    "aws-sdk": "^2.392.0",
+    "uuid": "^3.3.2"
   }
 }
