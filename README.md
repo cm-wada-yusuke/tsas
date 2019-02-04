@@ -6,7 +6,7 @@ TSAS - TypeScript Application for Serverless
 A command line tool, supports AWS serverless applicaion development.
 
 * Create AWS serverless project template (TypeScript, node).
-* Mange parameters by AWS Systems Manager parameter store.
+* Manage parameters by AWS Systems Manager parameter store.
 * Deploy Lambda Function using AWS SAM.
 * Deploy AWS resources using AWS CloudFormation.
 
