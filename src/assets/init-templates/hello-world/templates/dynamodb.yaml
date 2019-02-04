@@ -1,0 +1,15 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  HelloWorldGreetingTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref GreetingTableName
+      AttributeDefinitions:
+        - AttributeName: greetingId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: greetingId
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: !Ref Rcu
+        WriteCapacityUnits: !Ref Wcu

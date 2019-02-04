@@ -16,6 +16,7 @@ Resources:
         Variables:
           ENV: !Ref Env
           GREETING_TABLE_NAME: !Ref GreetingTableName
+          REGION: !Ref AWS::Region
 
   HelloWorldLambdaRole:
     Type: 'AWS::IAM::Role'

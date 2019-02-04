@@ -1,6 +1,8 @@
 import * as SSM from 'aws-sdk/clients/ssm';
 import { GetParametersByPathRequest, Parameter } from 'aws-sdk/clients/ssm';
 import { ISystemParameter, SYSTEM_PARAMETERS } from '../constant';
+import * as jsyaml from 'js-yaml';
+import { debug } from '../logging';
 
 export class SsmPower {
 
@@ -8,6 +10,12 @@ export class SsmPower {
 
     constructor(ssm: SSM) {
         this.ssm = ssm;
+    }
+
+    public async generateCfnParameterSectionYaml(searchBasePath: string): Promise<string> {
+        const cfnParameters = await this.generateCfnParameterSection(searchBasePath);
+        const outData = jsyaml.safeDump(cfnParameters);
+        return outData;
     }
 
     public async generateCfnParameterSection(searchBasePath: string): Promise<ICfnParameterSection> {
