@@ -105,13 +105,13 @@ Develop your application
 `environments/${env}/parameters.json` has application parameters. If you want to add/modify parameters, edit the json file and re-push to parameter store, using:
 
 ```bas
-tsas param push -env stg
+tsas param push --env stg
 ``` 
 
 If you want to confirm CloudFormation Parameter section, use:
 
 ```bash
-tsas display cfn-parameters -env stg
+tsas display cfn-parameters --env stg
 ```
 
 ### Add Lambda function 
