@@ -3,7 +3,7 @@
 TSAS - TypeScript Application for Serverless
 ===
 
-A command line tool, supports AWS serverless applicaion development.
+A command line tool, supports AWS serverless application development.
 
 * Create AWS serverless project template (TypeScript, node).
 * Manage parameters by AWS Systems Manager parameter store.
@@ -135,7 +135,9 @@ There are 3 step.
 
 ### Source code
 
-`src/handlers` has lambda function entry point. So, you can start developing new functions by adding files to handlers. 
+`src/handlers` has lambda function entry point. So, you can start developing new functions by adding files to handlers.
+
+smartphonename 
 
 ### webpack.config.js
 
@@ -151,7 +153,8 @@ module.exports = {
 
         // add
         'next-step': path.resolve(__dirname, './src/lambda/handlers/next/next-step.ts'), 
-    },
+    }
+...    
 ```
 
 ### lambda.yaml

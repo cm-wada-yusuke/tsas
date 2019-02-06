@@ -17,6 +17,9 @@ const _SYSTEM_PARAMETERS: ISystemParameter[] = [
     },
     {
         Name: 'DeployBucketName'
+    },
+    {
+        Name: 'NameSpace'
     }
 ];
 
