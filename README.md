@@ -137,8 +137,6 @@ There are 3 step.
 
 `src/handlers` has lambda function entry point. So, you can start developing new functions by adding files to handlers.
 
-smartphonename 
-
 ### webpack.config.js
 
 After that, edit `webpack.config.js` to entry new function.
