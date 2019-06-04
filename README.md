@@ -127,7 +127,7 @@ tsas display cfn-parameters --env stg
 
 ### Add Lambda function 
 
-There are 3 step.
+There are 3 steps.
 
 1. Add TypeScript source code.
 2. Append entry to `webpack.config.js`.
