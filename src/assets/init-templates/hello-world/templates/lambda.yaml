@@ -7,7 +7,7 @@ Resources:
       FunctionName: !Sub ${Env}-${AppName}-hello
       Role: !GetAtt HelloWorldLambdaRole.Arn
       Handler: hello-world/index.handler
-      Runtime: nodejs8.10
+      Runtime: nodejs10.x
       CodeUri:
         Bucket: !Ref DeployBucketName
         Key: !Sub ${ChangeSetHash}/dist.zip
