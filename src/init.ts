@@ -46,7 +46,7 @@ export class Init {
 
     private async assertIsEmptyDirectory() {
         const files = await fs.readdir(process.cwd());
-        if (files.length !== 0) {
+        if (files.filter(item => !(/(^|\/)\.[^\/.]/g).test(item)).length !== 0) {
             throw new Error('`init` command cannot be run in a non-empty directory!');
         }
     }
