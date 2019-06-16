@@ -10,6 +10,7 @@ import { DeployServerless } from './deploy/deploy-serverless';
 import colors = require('colors/safe');
 import { DeployCloudFormation } from './deploy/deploy-cloud-formation';
 import { DisplayCfnParameters } from './display/display-cfn-parameters';
+import { PutParameter } from './param/put-parameter';
 
 const CLI = 'tsas';
 
@@ -35,13 +36,18 @@ class Tsas {
             .command({
                 command: 'param',
                 handler: (_) => print(colors.yellow(`usage: ${CLI} param <action> [options]`)),
-                describe: 'Manage application parameters, [push|list]',
+                describe: 'Manage application parameters, [push|put|list]',
                 builder: (param) => {
                     return param
                         .command({
                             command: 'push',
                             describe: 'Push parameters to AWS Systems Manager, parameter store.',
                             handler: async (argv) => new PushParameters(await Settings.load(), OptionParser.parse(argv)).execute(),
+                        })
+                        .command({
+                            command: ['put <putIndividualParameterKey> <putIndividualParameterValue>'],
+                            describe: 'Put individual key-value parameter to AWS Systems Manager, parameter store.',
+                            handler: async (argv) => new PutParameter(await Settings.load(), OptionParser.parse(argv)).execute()
                         })
                         .command({
                             command: 'list',

@@ -5,6 +5,8 @@ export interface IOption {
     env: string;
     region?: string;
     cfnTemplateName?: string;
+    putIndividualParameterKey: string;
+    putIndividualParameterValue: string;
 }
 
 export class OptionParser {
@@ -17,7 +19,9 @@ export class OptionParser {
             e: args.e,
             env: args.env,
             region: args.region,
-            cfnTemplateName: args.name
+            cfnTemplateName: args.name,
+            putIndividualParameterKey: args.putIndividualParameterKey,
+            putIndividualParameterValue: args.putIndividualParameterValue,
         }
     }
 }
