@@ -125,6 +125,17 @@ If you want to confirm CloudFormation Parameter section, use:
 tsas display cfn-parameters --env stg
 ```
 
+### Put / Override individual parameter, such as server-side access key, secret key.
+
+If you don't want to write paramter to `variables.json`, use this command.
+
+`tsas param put <key> <value>`
+
+```bash
+tsas param put AccessKey LFIOPWEPJSD23423ALGFJ --env stg
+tsas param put AccessSecret afasdgbaj==awefaebasdvmkls--__ --env stg
+```
+
 ### Add Lambda function 
 
 There are 3 steps.

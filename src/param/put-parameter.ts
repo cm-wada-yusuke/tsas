@@ -2,47 +2,50 @@ import * as SSM from 'aws-sdk/clients/ssm';
 import { PutParameterRequest } from 'aws-sdk/clients/ssm';
 import { IOption } from '../option/option';
 import { ISettings } from '../settings/settings';
-import { EnvironmentVariables, IEnvironmentVariable } from '../settings/environment-variables';
+import { IEnvironmentVariable } from '../settings/environment-variables';
 import { ParameterUtils } from './util';
 import { ListParametersUseCase } from './list-parameters';
 import { AwsHangar } from '../option/profile/aws-hangar';
 
-export class PushParameters {
+export class PutParameter {
 
     settings: ISettings;
     option: IOption;
     awsHanger: AwsHangar;
+    key: string;
+    value: string;
 
 
     constructor(settings: ISettings, option: IOption) {
         this.settings = settings;
         this.option = option;
         this.awsHanger = new AwsHangar(settings, option);
+        console.log(option);
+        this.key = option.putIndividualParameterKey!;
+        this.value = option.putIndividualParameterValue!;
     }
 
     public async execute() {
         const basePath = ParameterUtils.basePath(await this.settings, this.option.env);
-        const variables = await EnvironmentVariables.load(this.option.env);
-        await PushParametersUseCase.push(this.awsHanger.ssm(), basePath, variables);
+        const variable: IEnvironmentVariable = {Name: this.key, Value: this.value};
+        await PutParameterUseCase.put(this.awsHanger.ssm(), basePath, variable);
         const result = await ListParametersUseCase.getParameters(this.awsHanger.ssm(), basePath);
         console.log(result);
     }
 
 }
 
-class PushParametersUseCase {
+class PutParameterUseCase {
 
-    public static async push(ssm: SSM, basePath: string, variables: IEnvironmentVariable[]): Promise<any[]> {
+    public static async put(ssm: SSM, basePath: string, variable: IEnvironmentVariable): Promise<any> {
 
-        const promise: Promise<any>[] = variables.map((p: IEnvironmentVariable) => {
-            const putParameters: PutParameterRequest = {
-                Name: `${basePath}/${p.Name}`,
-                Value: p.Value,
-                Type: 'String',
-                Overwrite: true,
-            };
-            return ssm.putParameter(putParameters).promise();
-        });
-        return Promise.all(promise);
+        const putParameters: PutParameterRequest = {
+            Name: `${basePath}/${variable.Name}`,
+            Value: variable.Value,
+            Type: 'String',
+            Overwrite: true,
+        };
+        return ssm.putParameter(putParameters).promise();
     }
+
 }
