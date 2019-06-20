@@ -37,7 +37,7 @@ export class DeployServerless {
         const s3Power = new S3Power(this.awsHanger.s3());
         const ssmPower = new SsmPower(this.awsHanger.ssm());
 
-        logging.print(colors.green('Check deploy bucket.'));
+        logging.print(colors.green(`Check deploy bucket: ${this.deployBucketName}`));
         await s3Power.createDeployBucketIfNotExists(this.deployBucketName);
 
 

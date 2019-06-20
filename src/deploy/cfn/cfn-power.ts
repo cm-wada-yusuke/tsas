@@ -6,7 +6,6 @@ import { IOption } from '../../option/option';
 import colors = require('colors/safe');
 import uuid = require('uuid');
 import CloudFormation = require('aws-sdk/clients/cloudformation');
-import set = Reflect.set;
 
 export class CfnPower {
 

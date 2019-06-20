@@ -45,6 +45,10 @@ export class S3Power {
             if (error.statusCode === 404) {
                 return false;
             }
+            if (error.statusCode === 403) {
+                logging.error('headBucket failed. In this case, maybe, the bucket is already created other environment. Consider to change application name.');
+                throw error;
+            }
             throw error;
         }
     }
