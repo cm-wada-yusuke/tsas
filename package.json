@@ -1,6 +1,6 @@
 {
   "name": "tsas",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "A command line tool for AWS Lambda TypeScript function.",
   "preferGlobal": true,
   "bin": {
