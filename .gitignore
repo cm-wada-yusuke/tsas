@@ -65,4 +65,4 @@ typings/
 
 # tsas
 dist/
-deploy/
+deploy/*
