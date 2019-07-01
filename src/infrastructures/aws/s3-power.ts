@@ -1,4 +1,4 @@
-import * as logging from '../logging';
+import * as logging from '../../logging';
 import * as fs from 'fs';
 import colors = require('colors/safe');
 import S3 = require('aws-sdk/clients/s3');

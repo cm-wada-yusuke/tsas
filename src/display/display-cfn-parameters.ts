@@ -1,7 +1,7 @@
 import { IOption } from '../option/option';
 import { ISettings } from '../settings/settings';
-import { AwsHangar } from '../option/profile/aws-hangar';
-import { SsmPower } from '../deploy/ssm-power';
+import { AwsHangar } from '../infrastructures/aws/aws-hangar';
+import { SsmPower } from '../infrastructures/aws/ssm-power';
 import * as logging from '../logging';
 import { ParameterUtils } from '../param/util';
 import colors = require('colors/safe');

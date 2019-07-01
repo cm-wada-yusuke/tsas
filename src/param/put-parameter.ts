@@ -5,7 +5,7 @@ import { ISettings } from '../settings/settings';
 import { IEnvironmentVariable } from '../settings/environment-variables';
 import { ParameterUtils } from './util';
 import { ListParametersUseCase } from './list-parameters';
-import { AwsHangar } from '../option/profile/aws-hangar';
+import { AwsHangar } from '../infrastructures/aws/aws-hangar';
 
 export class PutParameter {
 

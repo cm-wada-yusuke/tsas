@@ -1,9 +1,10 @@
 import { ISettings } from '../../settings/settings';
-import { IOption } from '../option';
+import { IOption } from '../../option/option';
 import AWS = require('aws-sdk');
 import * as CloudFormation from 'aws-sdk/clients/cloudformation';
 import S3 = require('aws-sdk/clients/s3');
 import SSM = require('aws-sdk/clients/ssm');
+import * as STS from 'aws-sdk/clients/sts';
 
 export class AwsHangar {
 
@@ -41,6 +42,15 @@ export class AwsHangar {
         return new AWS.SSM(
             {
                 apiVersion: '2014-11-06',
+                region: this.region
+            }
+        );
+    }
+
+    public sts(): STS {
+        return new AWS.STS(
+            {
+                apiVersion: '2011-06-15',
                 region: this.region
             }
         );

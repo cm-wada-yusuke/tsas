@@ -1,5 +1,5 @@
 import { debug, print } from '../../logging';
-import { describeStack, stackExists, stackFailedCreating, waitForChangeSet, waitForStack } from './cfn';
+import { describeStack, stackExists, stackFailedCreating, waitForChangeSet, waitForStack } from '../../deploy/cfn/cfn';
 import { CreateChangeSetInput, Parameters } from 'aws-sdk/clients/cloudformation';
 import { ISettings } from '../../settings/settings';
 import { IOption } from '../../option/option';

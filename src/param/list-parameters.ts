@@ -4,7 +4,7 @@ import { IOption } from '../option/option';
 import { ISettings } from '../settings/settings';
 import { ParameterUtils } from './util';
 import * as SSM from 'aws-sdk/clients/ssm';
-import { AwsHangar } from '../option/profile/aws-hangar';
+import { AwsHangar } from '../infrastructures/aws/aws-hangar';
 
 export class ListParameters {
 

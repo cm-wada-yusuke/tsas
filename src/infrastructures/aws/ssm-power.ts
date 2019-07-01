@@ -1,6 +1,6 @@
 import * as SSM from 'aws-sdk/clients/ssm';
 import { GetParametersByPathRequest, Parameter } from 'aws-sdk/clients/ssm';
-import { ISystemParameter, SYSTEM_PARAMETERS } from '../constant';
+import { ISystemParameter, SYSTEM_PARAMETERS } from '../../constant';
 import * as jsyaml from 'js-yaml';
 
 export class SsmPower {
