@@ -87,8 +87,8 @@ tsas deploy cloudformation dynamodb --env stg
 Using [aws/aws\-cli: Universal Command Line Interface for Amazon Web Services](https://github.com/aws/aws-cli).
 
 ```bash
-aws lambda invoke --function-name stg-hello-world-hello --log-type Tail \
---payload '{"key1":"value1", "key2":"value2", "key3":"value3"}' \
+aws lambda invoke --function-name <your-function-name> --log-type Tail \
+--payload '{"name":"Bob"}' \
 outputfile.txt
 ```
 

@@ -13,20 +13,20 @@ const DYNAMO = new AWS.DynamoDB(
     }
 );
 
-exports.handler = async (event: any) => {
-    return HelloWorldController.hello(event);
+exports.handler = async (event: User) => {
+    return HelloWorldUseCase.hello(event);
 };
 
-export class HelloWorldController {
+export class HelloWorldUseCase {
 
-    public static hello(payload: any): Promise<IGreeting> {
-        console.log(payload);
-        return GreetingDynamodbTable.greetingStore(this.createMessage());
+    public static hello(userInfo: User): Promise<void> {
+        console.log(userInfo);
+        return GreetingDynamodbTable.greetingStore(HelloWorldUseCase.createMessage(userInfo));
     }
 
-    private static createMessage(): IGreeting {
+    static createMessage(userInfo: User): GreetingMessage {
         return {
-            title: 'hello, lambda!',
+            title: `hello, ${userInfo.name}`,
             description: 'my first message.',
         }
     }
@@ -34,7 +34,7 @@ export class HelloWorldController {
 
 class GreetingDynamodbTable {
 
-    public static async greetingStore(greeting:IGreeting): Promise<any> {
+    public static async greetingStore(greeting:GreetingMessage): Promise<void> {
 
         const params: UpdateItemInput = {
             TableName: EnvironmentVariableSample,
@@ -49,12 +49,16 @@ class GreetingDynamodbTable {
             }
         };
 
-        return DYNAMO.updateItem(params).promise()
+        await DYNAMO.updateItem(params).promise()
     }
 
 }
 
-export interface IGreeting {
+export interface User {
+    name: string;
+}
+
+export interface GreetingMessage {
     title: string;
     description: string;
 }
