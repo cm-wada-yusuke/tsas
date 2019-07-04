@@ -158,10 +158,10 @@ module.exports = {
     mode: 'development',
     target: 'node',
     entry: {
-       'hello-world': path.resolve(__dirname, './src/lambda/handlers/hello/hello-world.ts'),
+       'hello-world': path.resolve(__dirname, './src/lambda/handlers/api-gw/api-gw-greeting.ts'),
 
-        // add
-        'next-step': path.resolve(__dirname, './src/lambda/handlers/next/next-step.ts'), 
+        // add ( example )
+        'next-step': path.resolve(__dirname, './src/lambda/handlers/api-gw/api-gw-next-step.ts'), 
     }
 ...    
 ```

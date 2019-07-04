@@ -5,7 +5,7 @@ module.exports = {
     mode: 'development',
     target: 'node',
     entry: {
-        'hello-world': path.resolve(__dirname, './src/lambda/handlers/hello/hello-world.ts'),
+        'hello-world': path.resolve(__dirname, './src/lambda/handlers/api-gw/api-gw-greeting.ts'),
     },
     externals: [nodeExternals({
         modulesFromFile: {
