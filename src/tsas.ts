@@ -4,7 +4,7 @@ import { print, setVerbose } from './logging';
 import { Init } from './init';
 import { ListParameters } from './param/list-parameters';
 import { OptionParser } from './option/option';
-import { Settings } from './settings/settings';
+import { SettingsLoader } from './settings/settings-loader';
 import { PushParameters } from './param/push-parameters';
 import { DeployServerless } from './deploy/deploy-serverless';
 import colors = require('colors/safe');
@@ -42,17 +42,17 @@ class Tsas {
                         .command({
                             command: 'push',
                             describe: 'Push parameters to AWS Systems Manager, parameter store.',
-                            handler: async (argv) => new PushParameters(await Settings.load(), OptionParser.parse(argv)).execute(),
+                            handler: async (argv) => new PushParameters(await SettingsLoader.load(), OptionParser.parse(argv)).execute(),
                         })
                         .command({
                             command: ['put <putIndividualParameterKey> <putIndividualParameterValue>'],
                             describe: 'Put individual key-value parameter to AWS Systems Manager, parameter store.',
-                            handler: async (argv) => new PutParameter(await Settings.load(), OptionParser.parse(argv)).execute()
+                            handler: async (argv) => new PutParameter(await SettingsLoader.load(), OptionParser.parse(argv)).execute()
                         })
                         .command({
                             command: 'list',
                             describe: 'ListParameters parameters to AWS Systems Manager, parameter store.',
-                            handler: async (argv) => new ListParameters(await Settings.load(), OptionParser.parse(argv)).execute()
+                            handler: async (argv) => new ListParameters(await SettingsLoader.load(), OptionParser.parse(argv)).execute()
                         })
                         .help()
                         .demandOption('env', 'Please provide environment name.')
@@ -67,12 +67,12 @@ class Tsas {
                         .command({
                             command: ['serverless', 'sls'],
                             describe: 'Deploy a template includes AWS::Serverless type.',
-                            handler: async (argv) => new DeployServerless(await Settings.load(), OptionParser.parse(argv)).execute(),
+                            handler: async (argv) => new DeployServerless(await SettingsLoader.load(), OptionParser.parse(argv)).execute(),
                         })
                         .command({
                             command: ['cloudformation <name>', 'cfn <name>'],
                             describe: 'Deploy specified pure CloudFormation template.',
-                            handler: async (argv) => new DeployCloudFormation(await Settings.load(), OptionParser.parse(argv)).execute()
+                            handler: async (argv) => new DeployCloudFormation(await SettingsLoader.load(), OptionParser.parse(argv)).execute()
                         })
                         .help()
                         .demandOption('env', 'Please provide environment name.')
@@ -87,7 +87,7 @@ class Tsas {
                         .command({
                             command: 'cfn-parameters',
                             describe: 'Display parameters for CloudFormation template.',
-                            handler: async (argv) => new DisplayCfnParameters(await Settings.load(), OptionParser.parse(argv)).execute(),
+                            handler: async (argv) => new DisplayCfnParameters(await SettingsLoader.load(), OptionParser.parse(argv)).execute(),
                         })
                         .help()
                         .demandOption('env', 'Please provide environment name.')

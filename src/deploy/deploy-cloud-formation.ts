@@ -1,5 +1,5 @@
 import { IOption } from '../option/option';
-import { ISettings } from '../settings/settings';
+import { Settings } from '../settings/settings-loader';
 import * as logging from '../logging';
 import { S3Power } from '../infrastructures/aws/s3-power';
 import { CfnPower } from '../infrastructures/aws/cfn-power';
@@ -14,13 +14,13 @@ import { StsPower } from '../infrastructures/aws/sts-power';
 
 export class DeployCloudFormation {
 
-    settings: ISettings;
+    settings: Settings;
     option: IOption;
     awsHanger: AwsHangar;
     deployName: string;
 
 
-    constructor(settings: ISettings, option: IOption) {
+    constructor(settings: Settings, option: IOption) {
         this.settings = settings;
         this.option = option;
         this.awsHanger = new AwsHangar(settings, option);

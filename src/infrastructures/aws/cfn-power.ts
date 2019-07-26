@@ -1,7 +1,7 @@
 import { debug, print } from '../../logging';
 import { describeStack, stackExists, stackFailedCreating, waitForChangeSet, waitForStack } from '../../deploy/cfn/cfn';
 import { CreateChangeSetInput, Parameters } from 'aws-sdk/clients/cloudformation';
-import { ISettings } from '../../settings/settings';
+import { Settings } from '../../settings/settings-loader';
 import { IOption } from '../../option/option';
 import colors = require('colors/safe');
 import uuid = require('uuid');
@@ -73,7 +73,7 @@ export class CfnPower {
         return result;
     }
 
-    public static generateCfnParameter(settings: ISettings, options: IOption, changeHash: string, deployBucketName: string): Parameters {
+    public static generateCfnParameter(settings: Settings, options: IOption, changeHash: string, deployBucketName: string): Parameters {
         return [
             {
                 ParameterKey: 'ChangeSetHash',
@@ -90,6 +90,10 @@ export class CfnPower {
             {
                 ParameterKey: 'NameSpace',
                 ParameterValue: settings.nameSpace
+            },
+            {
+                ParameterKey: 'AppVersion',
+                ParameterValue: settings.version
             }
         ];
     }

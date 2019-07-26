@@ -4,7 +4,7 @@ import { S3Power } from '../infrastructures/aws/s3-power';
 import { CfnPower } from '../infrastructures/aws/cfn-power';
 import { Parameters } from 'aws-sdk/clients/cloudformation';
 import fsExtra = require('fs-extra');
-import { ISettings } from '../settings/settings';
+import { Settings } from '../settings/settings-loader';
 import { IOption } from '../option/option';
 import set = Reflect.set;
 import { StsPower } from '../infrastructures/aws/sts-power';
@@ -55,7 +55,7 @@ export class DeployUtils {
     }
 
 
-    public static async getDeployBukcetName(settings: ISettings, option: IOption, stsPower: StsPower): Promise<string> {
+    public static async getDeployBukcetName(settings: Settings, option: IOption, stsPower: StsPower): Promise<string> {
         const region = option.region ? option.region : settings.defaultRegion;
         const accountId = await stsPower.getAccountId();
         return `${settings.nameSpace}-${option.env}-${settings.appName}-deploy-${region}-${accountId}`;

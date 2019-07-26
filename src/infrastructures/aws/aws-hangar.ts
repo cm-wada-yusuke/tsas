@@ -1,4 +1,4 @@
-import { ISettings } from '../../settings/settings';
+import { Settings } from '../../settings/settings-loader';
 import { IOption } from '../../option/option';
 import AWS = require('aws-sdk');
 import * as CloudFormation from 'aws-sdk/clients/cloudformation';
@@ -9,12 +9,12 @@ import * as STS from 'aws-sdk/clients/sts';
 export class AwsHangar {
 
 
-    private readonly settings: ISettings;
+    private readonly settings: Settings;
     private readonly option: IOption;
     private readonly region: string;
 
 
-    constructor(settings: ISettings, option: IOption) {
+    constructor(settings: Settings, option: IOption) {
         this.settings = settings;
         this.option = option;
         this.region = option.region ? option.region : settings.defaultRegion;

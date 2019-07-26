@@ -1,18 +1,18 @@
 import * as AWS from 'aws-sdk';
 import { GetParametersByPathRequest, Parameter } from 'aws-sdk/clients/ssm';
 import { IOption } from '../option/option';
-import { ISettings } from '../settings/settings';
+import { Settings } from '../settings/settings-loader';
 import { ParameterUtils } from './util';
 import * as SSM from 'aws-sdk/clients/ssm';
 import { AwsHangar } from '../infrastructures/aws/aws-hangar';
 
 export class ListParameters {
 
-    settings: ISettings;
+    settings: Settings;
     option: IOption;
     awsHanger: AwsHangar;
 
-    constructor(settings: ISettings, option: IOption) {
+    constructor(settings: Settings, option: IOption) {
         this.settings = settings;
         this.option = option;
         this.awsHanger = new AwsHangar(settings, option);

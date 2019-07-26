@@ -1,5 +1,5 @@
 import { IOption } from '../option/option';
-import { ISettings } from '../settings/settings';
+import { Settings } from '../settings/settings-loader';
 import { AwsHangar } from '../infrastructures/aws/aws-hangar';
 import { SsmPower } from '../infrastructures/aws/ssm-power';
 import * as logging from '../logging';
@@ -8,11 +8,11 @@ import colors = require('colors/safe');
 
 export class DisplayCfnParameters {
 
-    settings: ISettings;
+    settings: Settings;
     option: IOption;
     awsHanger: AwsHangar;
 
-    constructor(settings: ISettings, option: IOption) {
+    constructor(settings: Settings, option: IOption) {
         this.settings = settings;
         this.option = option;
         this.awsHanger = new AwsHangar(settings, option);

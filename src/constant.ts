@@ -20,6 +20,9 @@ const _SYSTEM_PARAMETERS: ISystemParameter[] = [
     },
     {
         Name: 'NameSpace'
+    },
+    {
+        Name: 'AppVersion'
     }
 ];
 
